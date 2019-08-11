@@ -1,3 +1,6 @@
+## Management System
+리액트 강의를 보고 공부중입니다.
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
