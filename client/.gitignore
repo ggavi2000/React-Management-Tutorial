@@ -1,5 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# database 아이디 비번 깃허브에 안 올라가도록 설정
+/database.json
+
 # dependencies
 /node_modules
 /.pnp

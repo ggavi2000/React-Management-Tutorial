@@ -52,9 +52,7 @@ class App extends Component {
   // 비동기적 어떠한 내용을 수행
   callApi = async () => {
     const response = await fetch('/api/customers');  // 접속하고자 하는 api의 주소를 넣음 (테스트: 로컬호스트의 api/customers에 접근)
-
-    // 고객 목록이 json 형태로 출력되면 body라는 변수에 넣어준다.
-    const body = await response.json();
+    const body = await response.json();  // 고객 목록이 json 형태로 출력되면 body라는 변수에 넣어준다.
     return body;  // 고객 목록 데이터를 전달
   }
 
@@ -87,10 +85,13 @@ class App extends Component {
           </TableHead>
 
           <TableBody>
-            {/* 만약 this.state.customers의 값이 존재하는 경우 실행, 아닐 경우 로딩바 실행 */}
-            {this.state.customers ? this.state.customers.map(c => {
-              return (<Customer key={c.id} id={c.id} image={c.image} name={c.name} birthday={c.birthday} gender={c.gender} job={c.job} />);
-            }) :
+            
+            {this.state.customers ? 
+              this.state.customers.map(c => {
+                console.log("로그: " + c.image);
+                
+                return <Customer key={c.id} id={c.id} image={c.image} name={c.name} birthday={c.birthday} gender={c.gender} job={c.job} />
+              }) :
               // 로딩바 실행
               <TableRow>
                 <TableCell colSpan="6" align="center">
@@ -98,7 +99,7 @@ class App extends Component {
                 </TableCell>
               </TableRow>
             }
-          </TableBody>
+          </TableBody>    
         </Table>
       </Paper>
     );
