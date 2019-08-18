@@ -5,6 +5,21 @@
 import React from 'react';
 import { post } from 'axios';
 
+// 예제: https://material-ui.com/components/dialogs/
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import { withStyles } from '@material-ui/core/styles';
+
+const styles = theme => ({
+    hidden: {
+        display: 'none'
+    }
+})
+
 class CustomerAdd extends React.Component {
 
     // 생성자
@@ -18,7 +33,8 @@ class CustomerAdd extends React.Component {
             birthday: "",
             gender: "",
             job: "",
-            fileName: ""
+            fileName: "",
+            open: false // 현재 다이얼로그 창이 열려 있나?
         }
     }
 
@@ -42,7 +58,8 @@ class CustomerAdd extends React.Component {
             birthday: '',
             gender: '',
             job: '',
-            fileName: ''
+            fileName: '',
+            open: false  // 서버로 값을 전달한 뒤 창을 끄기 위해 false로 지정
         })        
         this.props.stateRefresh();  // props 형태로 전달받은 stateRefresh() 함수를 수행한다.
         // 간단한 테스트용 : 화면을 새로고침해서 고객 데이터를 받아올 수 있도록 한다
@@ -87,22 +104,66 @@ class CustomerAdd extends React.Component {
         }
         return post(url, formData, config);
     }
+    
+
+    // 사용자가 고객추가 버튼을 눌러서 추가 모달 팝업창이 뜨도록 한다.
+    // (그리고 = () => 형태는 자동으로 바인딩 처리가 된다고 함)
+    handleClickOpen = () => {
+        this.setState({
+            open: true
+        });
+    }
+
+    // 반대로, 닫기 창을 눌렀다면
+    handleClose = () => {
+        this.setState({
+            file: null,
+            userName: '',
+            birthday: '',
+            gender: '',
+            job: '',
+            fileName: '',
+            open: false
+        })   
+    }
 
     // 값 추가 양식을 어떤식으로 보여줄지 정해준다.
     render() {
+        // 디자인 입히기
+        const { classes } = this.props;
         return (
-            <form onSubmit={this.handleFormSubmit}>
-                <h1> 값 추가 </h1>
-                프로필 이미지: <input type="file" name="file" file={this.state.file} value={this.state.fileName} onChange={this.handleFileChange} /> <br />
-                이름: <input type="text" name="userName" value={this.state.userName} onChange={this.handleValueChange} /> <br />
-                생년월일: <input type="text" name="birthday" value={this.state.birthday} onChange={this.handleValueChange} /> <br />
-                성별: <input type="text" name="gender" value={this.state.gender} onChange={this.handleValueChange} /> <br />
-                직업: <input type="text" name="job" value={this.state.job} onChange={this.handleValueChange} /> <br />
-                <button type="submit"> 추가하기 </button>
-            </form>
+            <div>
+                <Button variant="contained" color="primary" onClick={this.handleClickOpen}>
+                    값 추가 버튼
+                </Button>
+
+                <Dialog open={this.state.open} onClose={this.handleClose}>
+                    <DialogTitle> 고객 추가 </DialogTitle>
+                    <DialogContent>
+                        <input className={classes.hidden} accept="image/*" id="raised-button-file" type="file" file={this.state.file} value={this.state.fileName} onChange={this.handleFileChange} /> <br />
+                        <label htmlFor="raised-button-file">
+                            <Button variant="contained" color="primary" component="span" name="file">
+                                {/* 현재 어떤 파일도 선택이 안되어 있다면 프로필 이미지 선택, 그렇지 않다면 사용자 파일이름이 뜸 */}
+                                {this.state.fileName === "" ? "프로필 이미지 선택" : this.state.fileName}                                
+                            </Button>
+                        </label>
+                        <br/>
+                        <TextField label="이름" type="text" name="userName" value={this.state.userName} onChange={this.handleValueChange} /> <br />
+                        <TextField label="생년월일" type="text" name="birthday" value={this.state.birthday} onChange={this.handleValueChange} /> <br />
+                        <TextField label="성별" type="text" name="gender" value={this.state.gender} onChange={this.handleValueChange} /> <br />
+                        <TextField label="직업" type="text" name="job" value={this.state.job} onChange={this.handleValueChange} /> <br />
+                    </DialogContent>
+
+                    {/* 고객 데이터를 서버로 보내기 */}
+                    <DialogActions>
+                        <Button variant="contained" color="primary" onClick={this.handleFormSubmit}> 추가 </Button>
+                        <Button variant="outlined" color="primary" onClick={this.handleClose}> 닫기 </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
         )
     }
 }
 
 // 외부에서 사용될 수 있으므로
-export default CustomerAdd;
+export default withStyles(styles)(CustomerAdd);
