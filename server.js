@@ -44,7 +44,8 @@ app.get('/api/customers', (req, res) => {
 
     // 사용자가 [/api/customers]에 접속한 경우: 데이터베이스에 접근해서 쿼리를 날리도록 설정
     connection.query(
-        "SELECT * FROM CUSTOMER",
+        // 밑에서 삭제했다고 '표시'한 경우 isDeleted = 1이므로 못 불러온다.
+        "SELECT * FROM CUSTOMER WHERE isDeleted = 0",
         (err, rows, fields) => {
             res.send(rows);            
         }
@@ -54,7 +55,7 @@ app.get('/api/customers', (req, res) => {
 // 업로드라는 이름의 폴더를 사용자가 실제로 접근해서 프로필 이미지를 확인할 수 있도록 한다.
 app.use('/image', express.static('./upload'));  // 사용자 입장: 이미지란 이름의 경로로 접근을 하는데 그게 바로 실제 서버의 업로드 폴더와 매핑이 됨
 app.post('/api/customers', upload.single('image'), (req, res) => {
-    let sql = 'INSERT INTO CUSTOMER VALUES (null, ?, ?, ?, ?, ?)';
+    let sql = 'INSERT INTO CUSTOMER VALUES (null, ?, ?, ?, ?, ?, now(), 0)';  // now(): 데이터를 만든 날짜, 0: 삭제가 안된 상태란 뜻
     let image = '/image/' + req.file.filename;  // multer 라이브러리가 자동으로 안 겹치는 이름으로 설정해줌
     let name = req.body.name;
     let birthday = req.body.birthday;
@@ -77,6 +78,16 @@ app.post('/api/customers', upload.single('image'), (req, res) => {
     );
 });
 
+// delete 메소드로 접속한 경우: 특정한 id 값이 매칭된 경우 이를 처리
+app.delete('/api/customers/:id', (req, res) => {
+    let sql = 'UPDATE CUSTOMER SET isDeleted = 1 WHERE id = ?';  // db에서 데이터를 완전 지우는게 아니라, 지웠다고 표시만 함
+    let params = [req.params.id];
+    connection.query(sql, params,
+        (err, rows, fields) => {
+            res.send(rows);   // 쿼리가 실행된 결과를 클라이언트 측으로 보내준다
+        }
+    )
+});
 
 // 따옴표('')가 아니라 숫자 1 옆의 ``를 넣어줘야 동작함
 app.listen(port, () => console.log(`현재 동작중인 서버: ${port}`));

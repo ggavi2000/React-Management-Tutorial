@@ -107,6 +107,7 @@ class App extends Component {
               <TableCell> 생년월일 </TableCell>
               <TableCell> 성별 </TableCell>
               <TableCell> 직업 </TableCell>
+              <TableCell> 설정 </TableCell>
             </TableRow>
           </TableHead>
 
@@ -115,7 +116,7 @@ class App extends Component {
               this.state.customers.map(c => {
                 // console.log("로그: " + c.image);
                 
-                return <Customer key={c.id} id={c.id} image={c.image} name={c.name} birthday={c.birthday} gender={c.gender} job={c.job} />
+                return <Customer stateRefresh={this.stateRefresh} key={c.id} id={c.id} image={c.image} name={c.name} birthday={c.birthday} gender={c.gender} job={c.job} />
               }) :
               // 로딩바 실행
               <TableRow>

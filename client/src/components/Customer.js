@@ -3,6 +3,7 @@ import React from 'react'
 // 추가
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
+import CustomerDelete from './CustomerDelete';
 
 
 // 클래스 정의: React의 컴포넌트 형태로 작성 (컴포넌트: 라이브러리이자 클래스)
@@ -18,6 +19,7 @@ class Customer extends React.Component {
                 <TableCell> {this.props.birthday} </TableCell>
                 <TableCell> {this.props.gender} </TableCell>
                 <TableCell> {this.props.job} </TableCell>
+                <TableCell> <CustomerDelete id={this.props.id} stateRefresh={this.props.stateRefresh}/> </TableCell>
             </TableRow>
         )
     }
