@@ -1,5 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# 사용자가 업로드한 내용은 깃허브에 올라가면 안되므로 추가
+/upload
+
 # dependencies
 /node_modules
 /.pnp

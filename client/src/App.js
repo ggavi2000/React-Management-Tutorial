@@ -3,6 +3,7 @@ import './App.css';
 
 // 추가한 녀석들
 import Customer from './components/Customer';
+import CustomerAdd from './components/CustomerAdd';
 
 // material-ui
 import Paper from '@material-ui/core/Paper';  // 컴포넌트 외부를 감싸기 위해 사용하는 컴포넌트 중 하나
@@ -32,10 +33,33 @@ const styles = theme => ({
 
 
 class App extends Component {
-  // state: 서버로부터 고객 정보를 받아와야 하므로 데이터는 항상 변할 수 있다.
-  state = {
-    customers: "",
-    completed: 0  // 로딩바가 0%부터 100%까지 올라가도록 하기 위해
+
+  // // state: 서버로부터 고객 정보를 받아와야 하므로 데이터는 항상 변할 수 있다.
+  // state = {
+  //   customers: "",
+  //   completed: 0  // 로딩바가 0%부터 100%까지 올라가도록 하기 위해
+  // }
+
+  // 위에꺼 제거하고 생성자를 통해 다시 만듬
+  constructor(props) {
+    super(props);
+    this.state = {
+      customers: '',
+      completed: 0
+    }
+  }
+
+  // state 초기화
+  stateRefresh = () => {
+    this.setState({
+      customers: '',
+      completed: 0
+    });
+
+    // ↓ 고객 목록을 새롭게 다시 불러와야 하므로 고객 데이터를 불러오는 부분을 그대로 복사해서 다시 넣어줬음
+    this.callApi()     // callApi 함수로부터 고객 목록 데이터를 받아가지고 state에 넣어준다.
+      .then(res => this.setState({ customers: res }))   // callApi 함수가 리턴한 body라는 변수를 res로 받는다.
+      .catch(err => console.log(err));                // 오류가 발생한 경우
   }
 
   // [서버 연동]
@@ -71,6 +95,8 @@ class App extends Component {
     const { classes } = this.props;
 
     return (
+      // 1. 값 목록이 출력되는 테이블 아래
+      <div>
       <Paper className={classes.root}>
         <Table className={classes.table}>
           <TableHead>
@@ -85,10 +111,9 @@ class App extends Component {
           </TableHead>
 
           <TableBody>
-            
             {this.state.customers ? 
               this.state.customers.map(c => {
-                console.log("로그: " + c.image);
+                // console.log("로그: " + c.image);
                 
                 return <Customer key={c.id} id={c.id} image={c.image} name={c.name} birthday={c.birthday} gender={c.gender} job={c.job} />
               }) :
@@ -102,6 +127,11 @@ class App extends Component {
           </TableBody>    
         </Table>
       </Paper>
+
+      {/* 2. 값 추가 양식: CustomerAdd를 화면에 출력할 때,
+      props 값으로 stateRefresh 함수 자체를 props 형태로 보내준다. */}
+      <CustomerAdd stateRefresh={this.stateRefresh}/>
+      </div>     
     );
   }
 }
